@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Update Score</title>
+  <meta charset="UTF-8">
+  <style>
+    body { background:#001f3f; font-family:Arial,sans-serif; color:#fff; padding:10px; }
+    table { border-collapse:collapse; width:100%; margin-bottom:10px; }
+    th, td { border:1px solid #444; padding:5px; text-align:center; }
+    input { width:80px; padding:4px; text-align:center; }
+    button { padding:6px 10px; margin:4px; border:none; border-radius:5px; cursor:pointer; background:#0074D9; color:#fff; font-weight:bold; }
+    button:hover { background:#005fa3; }
+    .swap-btn { background:#FF851B; }
+    .next-btn { background:#2ECC40; }
+  </style>
+</head>
+<body>
+  <h2>Update Live Score</h2>
+
+  <table>
+    <tr>
+      <th>Team A</th><th>Team B</th><th>Runs</th><th>Wickets</th><th>Overs</th>
+      <th>Target</th><th>Target Overs</th><th>Target Wkts</th><th>Last 6 Balls</th>
+    </tr>
+    <tr>
+      <td><input id="teamA"></td>
+      <td><input id="teamB"></td>
+      <td><input type="number" id="runs"></td>
+      <td><input type="number" id="wickets"></td>
+      <td><input id="overs"></td>
+      <td><input id="target"></td>
+      <td><input id="targetOvers"></td>
+      <td><input id="targetWickets"></td>
+      <td><input id="last6" placeholder="e.g. 1 4 0 W 6 2"></td>
+    </tr>
+  </table>
+
+  <!-- Batsmen -->
+  <table>
+    <tr>
+      <th colspan="6">Batsman 1</th>
+      <th colspan="6">Batsman 2</th>
+    </tr>
+    <tr>
+      <td>Name</td><td>R</td><td>B</td><td>4s</td><td>6s</td><td>SR</td>
+      <td>Name</td><td>R</td><td>B</td><td>4s</td><td>6s</td><td>SR</td>
+    </tr>
+    <tr>
+      <td><input id="b1Name"></td><td><input id="b1Runs" type="number"></td><td><input id="b1Balls" type="number"></td>
+      <td><input id="b1Fours" type="number"></td><td><input id="b1Sixes" type="number"></td><td><input id="b1SR" readonly></td>
+
+      <td><input id="b2Name"></td><td><input id="b2Runs" type="number"></td><td><input id="b2Balls" type="number"></td>
+      <td><input id="b2Fours" type="number"></td><td><input id="b2Sixes" type="number"></td><td><input id="b2SR" readonly></td>
+    </tr>
+  </table>
+
+  <!-- Bowler -->
+  <table>
+    <tr><th>Name</th><th>Overs</th><th>Runs</th><th>Wkts</th><th>ECO</th></tr>
+    <tr>
+      <td><input id="bowlerName"></td>
+      <td><input id="bowlerOvers"></td>
+      <td><input type="number" id="bowlerRuns"></td>
+      <td><input type="number" id="bowlerWickets"></td>
+      <td><input id="bowlerEco" readonly></td>
+    </tr>
+  </table>
+
+  <button class="swap-btn" onclick="swapBatsmen()">Swap Batsmen</button>
+  <button class="next-btn" onclick="nextBatsman(1)">Next Batsman 1</button>
+  <button class="next-btn" onclick="nextBatsman(2)">Next Batsman 2</button>
+  <button onclick="saveData()">Save</button>
+  <p id="status"></p>
+
+  <script>
+    function calcSR(runs, balls) {
+      return balls > 0 ? ((runs / balls) * 100).toFixed(1) : "0.0";
+    }
+
+    function calcECO(runs, overs) {
+      let parts = (overs + "").split('.');
+      let o = parseInt(parts[0] || 0);
+      let b = parseInt(parts[1] || 0);
+      let totalOvers = o + (b / 6);
+      return totalOvers > 0 ? (runs / totalOvers).toFixed(2) : "0.0";
+    }
+
+    function autoCalc() {
+      b1SR.value = calcSR(+b1Runs.value, +b1Balls.value);
+      b2SR.value = calcSR(+b2Runs.value, +b2Balls.value);
+      bowlerEco.value = calcECO(+bowlerRuns.value, bowlerOvers.value);
+    }
+
+    document.querySelectorAll("input").forEach(el => el.addEventListener("input", autoCalc));
+
+    function swapBatsmen() {
+      const ids = ["Name","Runs","Balls","Fours","Sixes","SR"];
+      let temp = {};
+      ids.forEach(f => temp[f] = document.getElementById("b1"+f).value);
+      ids.forEach(f => document.getElementById("b1"+f).value = document.getElementById("b2"+f).value);
+      ids.forEach(f => document.getElementById("b2"+f).value = temp[f]);
+    }
+
+    function nextBatsman(num) {
+      document.getElementById(`b${num}Name`).value = "";
+      document.getElementById(`b${num}Runs`).value = 0;
+      document.getElementById(`b${num}Balls`).value = 0;
+      document.getElementById(`b${num}Fours`).value = 0;
+      document.getElementById(`b${num}Sixes`).value = 0;
+      document.getElementById(`b${num}SR`).value = "0.0";
+      saveData(); // auto save
+    }
+
+    async function saveData() {
+      autoCalc();
+      let payload = {
+        score: {
+          teamA: teamA.value, teamB: teamB.value,
+          runs: +runs.value, wickets: +wickets.value, overs: overs.value,
+          target: target.value ? +target.value : null,
+          targetOvers: targetOvers.value || null,
+          targetWickets: targetWickets.value || null,
+          last6: last6.value,
+          batsman1: { name:b1Name.value, runs:+b1Runs.value, balls:+b1Balls.value, fours:+b1Fours.value, sixes:+b1Sixes.value, sr:b1SR.value },
+          batsman2: { name:b2Name.value, runs:+b2Runs.value, balls:+b2Balls.value, fours:+b2Fours.value, sixes:+b2Sixes.value, sr:b2SR.value },
+          bowler: { name:bowlerName.value, overs:bowlerOvers.value, runs:+bowlerRuns.value, wickets:+bowlerWickets.value, eco:bowlerEco.value }
+        }
+      };
+
+      let res = await fetch("update.php", {
+        method:"POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(payload)
+      });
+
+      let result = await res.json();
+      status.innerText = result.success ? "✅ Score Updated!" : "❌ Error!";
+    }
+  </script>
+</body>
+</html>
