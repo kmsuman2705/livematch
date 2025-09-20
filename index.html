@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Cricket Score</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      background: linear-gradient(to right, #0d0d0d, #1a1a1a);
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .scorecard {
+      max-width: 500px;
+      margin: auto;
+      background: #222;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+    }
+    .teams {
+      display: flex;
+      justify-content: space-between;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .score {
+      font-size: 36px;
+      margin: 15px 0;
+    }
+    .sub-info {
+      font-size: 18px;
+      color: #ccc;
+    }
+    .target-team {
+      margin-top: 15px;
+      background: #333;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 18px;
+      color: #00ffff;
+    }
+    .target-info {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #00ff88;
+      font-size: 20px;
+    }
+    .last6 {
+      margin-top: 10px;
+      background: #333;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 18px;
+      letter-spacing: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="scorecard">
+    <div class="teams">
+      <span id="teamA">Team A</span>
+      <span id="teamB">Team B</span>
+    </div>
+
+    <div class="score" id="scoreDisplay">0/0</div>
+    <div class="sub-info" id="oversDisplay">Overs: 0.0</div>
+    <div class="sub-info" id="runRateDisplay">Run Rate: 0.00</div>
+
+    <div class="target-team" id="targetTeamDisplay" style="display:none;"></div>
+    <div class="target-info" id="chaseInfo"></div>
+    <div class="last6" id="last6Display">- - - - - -</div>
+  </div>
+
+  <script>
+    async function fetchScore() {
+      const res = await fetch('score.json?_=' + Date.now());
+      const data = await res.json();
+      const score = data.score;
+
+      // Populate data
+      document.getElementById('teamA').innerText = score.teamA || "Team A";
+      document.getElementById('teamB').innerText = score.teamB || "Team B";
+      document.getElementById('scoreDisplay').innerText = `${score.runs}/${score.wickets}`;
+      document.getElementById('oversDisplay').innerText = `Overs: ${score.overs}`;
+      document.getElementById('last6Display').innerText = score.last6 || "- - - - - -";
+
+      // Calculate run rate
+      const overs = parseFloat(score.overs);
+      const rr = overs > 0 ? (score.runs / overs).toFixed(2) : "0.00";
+      document.getElementById('runRateDisplay').innerText = `Run Rate: ${rr}`;
+
+      // Show target / required runs
+      if (score.target && score.target !== "") {
+        let targetScore = `${score.target}/${score.targetWickets || "-"} (20.0)`; // targetWickets will come from update.html
+        document.getElementById('targetTeamDisplay').innerText =
+          `${score.teamA} scored ${targetScore}`;
+        document.getElementById('targetTeamDisplay').style.display = "block";
+
+        let runsNeeded = score.target - score.runs;
+        let ballsBowled = calcBalls(score.overs);
+        let totalBalls = 120; // 20 overs match
+        let ballsLeft = totalBalls - ballsBowled;
+        document.getElementById('chaseInfo').innerText =
+          `${runsNeeded > 0 ? runsNeeded : 0} runs needed in ${ballsLeft >= 0 ? ballsLeft : 0} balls`;
+      } else {
+        document.getElementById('targetTeamDisplay').style.display = "none";
+        document.getElementById('chaseInfo').innerText = "";
+      }
+    }
+
+    function calcBalls(overStr) {
+      let parts = overStr.split(".");
+      let completedOvers = parseInt(parts[0]) || 0;
+      let extraBalls = parseInt(parts[1]) || 0;
+      return completedOvers * 6 + extraBalls;
+    }
+
+    fetchScore();
+    setInterval(fetchScore, 3000);
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Update Score</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #111; color: #fff; font-family: sans-serif; padding: 20px; }
+    h2 { text-align: center; }
+    input, select {
+      width: 100%; font-size: 18px; padding: 8px; margin: 8px 0;
+      border-radius: 6px; border: 1px solid #333; background: #222; color: #fff;
+    }
+    .team-row { display: flex; gap: 10px; }
+    .team-row input { flex: 1; }
+    .btn {
+      display: inline-block;
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .btn-swap { background: #444; color: #fff; }
+    .btn-update { background: #28a745; color: #fff; width: 100%; margin-top: 15px; }
+    .ball-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 15px; }
+    .ball-btn {
+      flex: 1 0 18%; padding: 12px; font-size: 20px;
+      text-align: center; border: none; border-radius: 6px;
+      cursor: pointer;
+    }
+    .zero { background: #444; color: #fff; }
+    .run { background: #00aa66; color: #fff; }
+    .four { background: green; color: #fff; font-weight: bold; }
+    .six { background: blue; color: #fff; font-weight: bold; }
+    .wicket { background: red; color: #fff; font-weight: bold; }
+    .extra { background: yellow; color: #000; font-weight: bold; }
+    #chaseInfo { text-align:center; font-size:16px; margin-top:10px; font-weight:bold; }
+  </style>
+</head>
+<body>
+  <h2>🏏 Update Live Score</h2>
+
+  <div class="team-row">
+    <input id="teamA" type="text" placeholder="Team A Name" value="India">
+    <input id="teamB" type="text" placeholder="Team B Name" value="Pakistan">
+    <button class="btn btn-swap" onclick="swapTeams()">🔄 Swap</button>
+  </div>
+
+  <input id="runs" type="number" placeholder="Runs" value="0">
+  <input id="wickets" type="number" placeholder="Wickets" value="0">
+  <input id="overs" type="number" step="0.1" placeholder="Overs" value="0.0">
+  <input id="target" type="number" placeholder="Target (Optional)" value="">
+  <input id="targetWickets" type="number" placeholder="Target Team Wickets" value="">
+  <input id="last6" type="text" placeholder="Last 6 Balls (Auto)" readonly>
+  <p id="runRate">Run Rate: 0.00</p>
+  <p id="chaseInfo"></p>
+
+  <!-- Ball Buttons -->
+  <div class="ball-buttons">
+    <button class="ball-btn zero" onclick="addBall('0',0)">0</button>
+    <button class="ball-btn run" onclick="addBall('1',1)">1</button>
+    <button class="ball-btn run" onclick="addBall('2',2)">2</button>
+    <button class="ball-btn run" onclick="addBall('3',3)">3</button>
+    <button class="ball-btn four" onclick="addBall('4',4)">4</button>
+    <button class="ball-btn six" onclick="addBall('6',6)">6</button>
+    <button class="ball-btn wicket" onclick="addBall('W','wicket')">W</button>
+    <button class="ball-btn extra" onclick="addBall('NB','nb')">NB</button>
+    <button class="ball-btn extra" onclick="addBall('WD','wd')">WD</button>
+  </div>
+
+  <button class="btn btn-update" onclick="saveData()">💾 Update Score</button>
+
+  <p id="result"></p>
+
+  <script>
+    let last6Balls = [];
+    let targetValue = "";
+    let targetWicketsValue = "";
+
+    function swapTeams() {
+      let a = document.getElementById("teamA").value;
+      let b = document.getElementById("teamB").value;
+      document.getElementById("teamA").value = b;
+      document.getElementById("teamB").value = a;
+    }
+
+    function addBall(ball, type) {
+      last6Balls.push(ball);
+      if (last6Balls.length > 6) last6Balls.shift();
+      document.getElementById("last6").value = last6Balls.join(" ");
+
+      let runs = parseInt(document.getElementById("runs").value);
+      let wickets = parseInt(document.getElementById("wickets").value);
+
+      if (type === 'wicket') {
+        wickets++;
+      } else if (type === 'nb' || type === 'wd') {
+        runs++; 
+      } else {
+        runs += type;
+        incrementOvers();
+      }
+
+      document.getElementById("runs").value = runs;
+      document.getElementById("wickets").value = wickets;
+      calculateRunRate();
+      calculateChaseInfo();
+    }
+
+    function incrementOvers() {
+      let overs = document.getElementById("overs").value;
+      let [over, ball] = overs.split('.').map(n => parseInt(n) || 0);
+      if (ball < 5) ball++;
+      else { over++; ball = 0; }
+      document.getElementById("overs").value = `${over}.${ball}`;
+    }
+
+    function calculateRunRate() {
+      let runs = parseInt(document.getElementById("runs").value);
+      let overs = parseFloat(document.getElementById("overs").value);
+      let rr = overs > 0 ? (runs / overs).toFixed(2) : "0.00";
+      document.getElementById("runRate").innerText = `Run Rate: ${rr}`;
+    }
+
+    function calculateChaseInfo() {
+      let target = parseInt(document.getElementById("target").value || targetValue || 0);
+      let runs = parseInt(document.getElementById("runs").value);
+      let overs = document.getElementById("overs").value;
+      if (target > 0) {
+        let totalBalls = 120; // default 20 overs
+        if (overs.includes('.')) {
+          let [o, b] = overs.split('.').map(Number);
+          let ballsBowled = o * 6 + b;
+          let ballsRemaining = totalBalls - ballsBowled;
+          let runsNeeded = target - runs;
+          document.getElementById("chaseInfo").innerText =
+            `Need ${runsNeeded} runs in ${ballsRemaining} balls`;
+        }
+      } else {
+        document.getElementById("chaseInfo").innerText = "";
+      }
+    }
+
+    async function saveData() {
+      const data = {
+        teamA: document.getElementById("teamA").value,
+        teamB: document.getElementById("teamB").value,
+        runs: document.getElementById("runs").value,
+        wickets: document.getElementById("wickets").value,
+        overs: document.getElementById("overs").value,
+        last6: document.getElementById("last6").value,
+        target: document.getElementById("target").value || targetValue,
+        targetWickets: document.getElementById("targetWickets").value || targetWicketsValue
+      };
+      targetValue = data.target; 
+      targetWicketsValue = data.targetWickets;
+
+      calculateChaseInfo();
+
+      const res = await fetch('update.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ score: data })
+      });
+      const text = await res.text();
+      document.getElementById("result").innerText = text;
+    }
+  </script>
+</body>
+</html>
