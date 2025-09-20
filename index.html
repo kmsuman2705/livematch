@@ -1,187 +1,156 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Live Cricket Score</title>
-  <meta charset="UTF-8">
-  <style>
-    body { background: #001f3f; margin: 0; font-family: Arial, sans-serif; color: #fff; }
-    .container { max-width: 900px; margin: auto; padding: 10px; }
-    .teamscore {
-      display: flex; justify-content: space-between; align-items: center;
-      background: #004080; padding: 10px; border-radius: 10px;
-      font-size: 28px; font-weight: bold;
-    }
-    .team { display: flex; align-items: center; gap: 10px; }
-    .flag { width: 40px; height: 25px; border-radius: 4px; background: #fff; }
-    .score { font-size: 32px; }
-    .batsmen, .bowler {
-      margin-top: 10px; background: #003366; padding: 10px;
-      border-radius: 10px; font-size: 18px;
-    }
-    .batsmen table, .bowler table { width: 100%; border-collapse: collapse; }
-    th, td { text-align: center; padding: 5px; }
-    .highlight { background: #0059b3; font-weight: bold; }
-    .info-bar {
-      display: flex; justify-content: space-around; margin-top: 10px;
-      background: #002244; padding: 8px; border-radius: 8px; font-size: 30px;
-    }
-    .last6 {
-      margin-top: 10px; padding: 8px; text-align: center;
-      background: #004d4d; border-radius: 8px; font-size: 20px;
-      letter-spacing: 2px;
-    }
-    /* ✅ Perfect round balls */
-    .ball {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      margin: 0 4px;
-      font-weight: bold;
-      font-size: 14px;
-    }
-    .ball-0 { background:#666; color:#fff; }
-    .ball-1, .ball-2, .ball-3 { background:#00aa66; color:#fff; }
-    .ball-4 { background:green; color:#fff; }
-    .ball-6 { background:blue; color:#fff; }
-    .ball-W { background:red; color:#fff; }
-    .ball-extra { background:yellow; color:#000; }
-  </style>
+<meta charset="UTF-8">
+<title>Live Cricket Score</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { background:#001f3f; margin:0; font-family:Arial,sans-serif; color:#fff; }
+  .container { max-width:900px; margin:auto; padding:10px; }
+  .teamscore { display:flex; justify-content:space-between; align-items:center; background:#004080; padding:10px; border-radius:10px; font-size:28px; font-weight:bold; }
+  .team { display:flex; align-items:center; gap:10px; }
+  .flag { width:40px; height:25px; border-radius:4px; background:#fff; }
+  .score { font-size:32px; }
+  .batsmen, .bowler { margin-top:10px; background:#003366; padding:10px; border-radius:10px; font-size:18px; }
+  .batsmen table, .bowler table { width:100%; border-collapse:collapse; }
+  th, td { text-align:center; padding:5px; }
+  .highlight { background:#0059b3; font-weight:bold; }
+  .info-bar { display:flex; justify-content:space-around; margin-top:10px; background:#002244; padding:8px; border-radius:8px; font-size:20px; }
+  .last6 { margin-top:10px; display:flex; justify-content:center; gap:5px; font-size:18px; }
+  .ball { display:inline-flex; justify-content:center; align-items:center; width:28px; height:28px; border-radius:50%; font-weight:bold; }
+  .ball-0 { background:#666; color:#fff; }
+  .ball-1, .ball-2, .ball-3 { background:#00aa66; color:#fff; }
+  .ball-4 { background:green; color:#fff; }
+  .ball-6 { background:blue; color:#fff; }
+  .ball-W { background:red; color:#fff; }
+  .ball-extra { background:yellow; color:#000; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <!-- Team Score -->
-    <div class="teamscore">
-      <div class="team"><div class="flag" id="flagA"></div><span id="teamA">Team A</span></div>
-      <div class="score" id="scoreDisplay">0/0 (0.0)</div>
-      <div class="team"><span id="teamB">Team B</span><div class="flag" id="flagB"></div></div>
-    </div>
-
-    <!-- Current Batsmen -->
-    <div class="batsmen">
-      <table>
-        <thead>
-          <tr><th>Batsman</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr>
-        </thead>
-        <tbody>
-          <tr class="highlight">
-            <td id="batsman1Name">Batsman 1</td><td id="batsman1R">0</td><td id="batsman1B">0</td><td id="batsman1F">0</td><td id="batsman1S">0</td><td id="batsman1SR">0.0</td>
-          </tr>
-          <tr>
-            <td id="batsman2Name">Batsman 2</td><td id="batsman2R">0</td><td id="batsman2B">0</td><td id="batsman2F">0</td><td id="batsman2S">0</td><td id="batsman2SR">0.0</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Bowler Info -->
-    <div class="bowler">
-      <table>
-        <thead>
-          <tr><th>Bowler</th><th>O</th><th>R</th><th>W</th><th>ECO</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td id="bowlerName">Bowler</td><td id="bowlerO">0.0</td><td id="bowlerR">0</td><td id="bowlerW">0</td><td id="bowlerEco">0.0</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- CRR, RRR, Target -->
-    <div class="info-bar">
-      <span id="crr">CRR: 0.00</span>
-      <span id="rrr">RRR: -</span>
-      <span id="target">Target: -</span>
-    </div>
-
-    <!-- Last 6 Balls -->
-    <div class="last6" id="last6Container">- - - - - -</div>
+<div class="container">
+  <!-- Team Score -->
+  <div class="teamscore">
+    <div class="team"><div class="flag" id="flagA"></div><span id="teamA">Team A</span></div>
+    <div class="score" id="scoreDisplay">0/0 (0.0)</div>
+    <div class="team"><span id="teamB">Team B</span><div class="flag" id="flagB"></div></div>
   </div>
 
-  <script>
-    async function fetchScore() {
-      const res = await fetch('score.json?_=' + Date.now());
-      const data = await res.json();
-      const s = data.score;
+  <!-- Current Batsmen -->
+  <div class="batsmen">
+    <table>
+      <thead>
+        <tr><th>Batsman</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr>
+      </thead>
+      <tbody>
+        <tr class="highlight">
+          <td id="batsman1Name">Batsman 1</td><td id="batsman1R">0</td><td id="batsman1B">0</td><td id="batsman1F">0</td><td id="batsman1S">0</td><td id="batsman1SR">0.0</td>
+        </tr>
+        <tr>
+          <td id="batsman2Name">Batsman 2</td><td id="batsman2R">0</td><td id="batsman2B">0</td><td id="batsman2F">0</td><td id="batsman2S">0</td><td id="batsman2SR">0.0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-      document.getElementById('teamA').innerText = s.teamA;
-      document.getElementById('teamB').innerText = s.teamB;
-      document.getElementById('scoreDisplay').innerText = `${s.runs}/${s.wickets} (${s.overs})`;
+  <!-- Bowler Info -->
+  <div class="bowler">
+    <table>
+      <thead>
+        <tr><th>Bowler</th><th>O</th><th>R</th><th>W</th><th>ECO</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="bowlerName">Bowler</td><td id="bowlerO">0.0</td><td id="bowlerR">0</td><td id="bowlerW">0</td><td id="bowlerEco">0.0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-      // ✅ LAST 6 BALLS WITH COLOR
-      let last6Container = document.getElementById('last6Container');
-      last6Container.innerHTML = "";
-      let balls = (s.last6 || "").split(" ").filter(Boolean);
-      if (balls.length === 0) {
-        last6Container.innerText = "- - - - - -";
-      } else {
-        balls.forEach(b => {
-          let span = document.createElement("span");
-          span.classList.add("ball");
-          if (b === "0") span.classList.add("ball-0");
-          else if (["1","2","3"].includes(b)) span.classList.add("ball-1");
-          else if (b === "4") span.classList.add("ball-4");
-          else if (b === "6") span.classList.add("ball-6");
-          else if (b.toUpperCase() === "W") span.classList.add("ball-W");
-          else span.classList.add("ball-extra");
-          span.innerText = b;
-          last6Container.appendChild(span);
-        });
-      }
+  <!-- CRR, RRR, Target -->
+  <div class="info-bar">
+    <span id="crr">CRR: 0.00</span>
+    <span id="rrr">RRR: -</span>
+    <span id="target">Target: -</span>
+  </div>
 
-      // batsman 1
-      document.getElementById('batsman1Name').innerText = s.batsman1?.name || "-";
-      document.getElementById('batsman1R').innerText = s.batsman1?.runs || "0";
-      document.getElementById('batsman1B').innerText = s.batsman1?.balls || "0";
-      document.getElementById('batsman1F').innerText = s.batsman1?.fours || "0";
-      document.getElementById('batsman1S').innerText = s.batsman1?.sixes || "0";
-      document.getElementById('batsman1SR').innerText = s.batsman1?.sr || "0.0";
+  <!-- Last 6 Balls -->
+  <div class="last6" id="last6Container">- - - - - -</div>
+</div>
 
-      // batsman 2
-      document.getElementById('batsman2Name').innerText = s.batsman2?.name || "-";
-      document.getElementById('batsman2R').innerText = s.batsman2?.runs || "0";
-      document.getElementById('batsman2B').innerText = s.batsman2?.balls || "0";
-      document.getElementById('batsman2F').innerText = s.batsman2?.fours || "0";
-      document.getElementById('batsman2S').innerText = s.batsman2?.sixes || "0";
-      document.getElementById('batsman2SR').innerText = s.batsman2?.sr || "0.0";
+<script>
+async function fetchScore(){
+  const res = await fetch('score.json?_=' + Date.now());
+  const data = await res.json();
+  const s = data.score;
 
-      // bowler
-      document.getElementById('bowlerName').innerText = s.bowler?.name || "-";
-      document.getElementById('bowlerO').innerText = s.bowler?.overs || "0.0";
-      document.getElementById('bowlerR').innerText = s.bowler?.runs || "0";
-      document.getElementById('bowlerW').innerText = s.bowler?.wickets || "0";
-      document.getElementById('bowlerEco').innerText = s.bowler?.eco || "0.0";
+  // Teams and score
+  document.getElementById('teamA').innerText = s.teamA;
+  document.getElementById('teamB').innerText = s.teamB;
+  document.getElementById('scoreDisplay').innerText = `${s.runs}/${s.wickets} (${s.overs})`;
 
-      // CRR & RRR Calculation
-      let overs = parseFloat(s.overs);
-      document.getElementById('crr').innerText = "CRR: " + (overs > 0 ? (s.runs / overs).toFixed(2) : "0.00");
+  // Last 6 Balls display
+  let last6Container = document.getElementById('last6Container');
+  last6Container.innerHTML="";
+  let balls = (s.last6 || "").split(" ").filter(Boolean);
+  if(balls.length===0){ balls=["-","-","-","-","-","-"]; }
+  balls.forEach(b=>{
+    let span = document.createElement("span");
+    span.classList.add("ball");
+    if(b==="0") span.classList.add("ball-0");
+    else if(["1","2","3"].includes(b)) span.classList.add("ball-1");
+    else if(b==="4") span.classList.add("ball-4");
+    else if(b==="6") span.classList.add("ball-6");
+    else if(b.toUpperCase()==="W") span.classList.add("ball-W");
+    else span.classList.add("ball-extra");
+    span.innerText=b;
+    last6Container.appendChild(span);
+  });
 
-      if (s.target) {
-        let targetDisplay = s.targetWickets ? `${s.target}/${s.targetWickets}` : `${s.target}`;
-        document.getElementById('target').innerText = `Target: ${targetDisplay}`;
+  // Batsmen
+  ['1','2'].forEach(i=>{
+    let b = s['batsman'+i]||{};
+    document.getElementById('batsman'+i+'Name').innerText = b.name || "-";
+    document.getElementById('batsman'+i+'R').innerText = b.runs || "0";
+    document.getElementById('batsman'+i+'B').innerText = b.balls || "0";
+    document.getElementById('batsman'+i+'F').innerText = b.fours || "0";
+    document.getElementById('batsman'+i+'S').innerText = b.sixes || "0";
+    document.getElementById('batsman'+i+'SR').innerText = b.sr || "0.0";
+  });
 
-        let runsNeeded = s.target - s.runs;
-        let totalBalls = 120; // 20 overs
-        let ballsBowled = calcBalls(s.overs);
-        let ballsLeft = totalBalls - ballsBowled;
-        let rrr = ballsLeft > 0 ? ((runsNeeded / (ballsLeft/6))).toFixed(2) : "0.00";
-        document.getElementById('rrr').innerText = "RRR: " + rrr;
-      } else {
-        document.getElementById('rrr').innerText = "RRR: -";
-        document.getElementById('target').innerText = "Target: -";
-      }
-    }
+  // Bowler
+  let b = s.bowler||{};
+  document.getElementById('bowlerName').innerText = b.name||"-";
+  document.getElementById('bowlerO').innerText = b.overs||"0.0";
+  document.getElementById('bowlerR').innerText = b.runs||"0";
+  document.getElementById('bowlerW').innerText = b.wickets||"0";
+  document.getElementById('bowlerEco').innerText = b.eco||"0.0";
 
-    function calcBalls(overs) {
-      let [o, b] = overs.split('.').map(Number);
-      return (o * 6) + (b || 0);
-    }
+  // CRR
+  let oversParts = (s.overs||"0.0").split(".");
+  let oversFloat = (+oversParts[0])+((+oversParts[1]||0)/6);
+  document.getElementById('crr').innerText = "CRR: "+(oversFloat>0?(s.runs/oversFloat).toFixed(2):"0.00");
 
-    fetchScore();
-    setInterval(fetchScore, 3000);
-  </script>
+  // RRR & Target
+  if(s.target){
+    let targetDisplay = s.target;
+    if(s.targetWickets) targetDisplay += `/${s.targetWickets}`;
+    if(s.targetOvers) targetDisplay += ` (${s.targetOvers})`;
+    document.getElementById('target').innerText = "Target: "+targetDisplay;
+
+    let runsNeeded = s.target - s.runs + 1; // +1 for chasing
+    let totalBalls = parseFloat(s.targetOvers)*6;
+    let ballsBowled = (+oversParts[0]*6)+(+oversParts[1]||0);
+    let ballsLeft = totalBalls - ballsBowled;
+    let rrr = ballsLeft>0?(runsNeeded/(ballsLeft/6)).toFixed(2):"0.00";
+    document.getElementById('rrr').innerText = "RRR: "+rrr;
+  } else {
+    document.getElementById('target').innerText = "Target: -";
+    document.getElementById('rrr').innerText = "RRR: -";
+  }
+}
+
+fetchScore();
+setInterval(fetchScore,3000);
+</script>
 </body>
 </html>
