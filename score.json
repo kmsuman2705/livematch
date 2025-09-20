@@ -2,13 +2,32 @@
     "score": {
         "teamA": "India",
         "teamB": "Pakistan",
-        "runs": "320",
-        "wickets": "4",
-        "overs": "17.3",
-        "last6": "6 1 2 3 NB WD",
-        "target": "350",
-        "targetWickets": "10"
-    },
-    "target": "180",
-    "team1": "India ",
-    "team2": "oman"
+        "runs": 136,
+        "wickets": 7,
+        "overs": "15.0",
+        "last6": "NB W W 6 1 3",
+        "target": 190,
+        "batsman1": {
+            "name": "rohit",
+            "runs": 50,
+            "balls": 10,
+            "fours": 2,
+            "sixes": 2,
+            "sr": "500.00"
+        },
+        "batsman2": {
+            "name": "surya",
+            "runs": 30,
+            "balls": 5,
+            "fours": 1,
+            "sixes": 2,
+            "sr": "600.00"
+        },
+        "bowler": {
+            "name": "ravi",
+            "overs": "5.4",
+            "runs": 20,
+            "wickets": 2,
+            "eco": "3.53"
+        }
+    }

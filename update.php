@@ -1,27 +1,25 @@
 <?php
-// Accept JSON input from fetch() POST
 $data = json_decode(file_get_contents("php://input"), true);
-
 $filePath = "/var/www/html/score.json";
 
-// Read old data to preserve target if empty
+// Read old data to preserve existing values
 $existingData = [];
 if (file_exists($filePath)) {
     $existingData = json_decode(file_get_contents($filePath), true);
     if (!is_array($existingData)) $existingData = [];
 }
 
-// ✅ Preserve target if new target is empty
-if (empty($data['target']) && !empty($existingData['target'])) {
-    $data['target'] = $existingData['target'];
+// ✅ Preserve target if new target empty
+if (empty($data['score']['target']) && !empty($existingData['score']['target'])) {
+    $data['score']['target'] = $existingData['score']['target'];
 }
 
-// ✅ Preserve team names if empty (avoid wiping accidentally)
-if (empty($data['team1']) && !empty($existingData['team1'])) {
-    $data['team1'] = $existingData['team1'];
+// ✅ Preserve team names if empty
+if (empty($data['score']['teamA']) && !empty($existingData['score']['teamA'])) {
+    $data['score']['teamA'] = $existingData['score']['teamA'];
 }
-if (empty($data['team2']) && !empty($existingData['team2'])) {
-    $data['team2'] = $existingData['team2'];
+if (empty($data['score']['teamB']) && !empty($existingData['score']['teamB'])) {
+    $data['score']['teamB'] = $existingData['score']['teamB'];
 }
 
 // ✅ Save updated data
