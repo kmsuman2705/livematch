@@ -28,15 +28,26 @@
     .last6 {
       margin-top: 10px; padding: 8px; text-align: center;
       background: #004d4d; border-radius: 8px; font-size: 20px;
-      display: flex; justify-content: center; gap: 10px;
+      letter-spacing: 2px;
     }
-    .ball { padding: 5px 8px; border-radius: 4px; font-weight: bold; }
-    .ball-0 { background: #555; }
-    .ball-1, .ball-2, .ball-3 { background: #00aa66; }
-    .ball-4 { background: green; }
-    .ball-6 { background: blue; }
-    .ball-W { background: red; }
-    .ball-NB, .ball-WD { background: yellow; color: #000; }
+    /* ✅ Perfect round balls */
+    .ball {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      margin: 0 4px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .ball-0 { background:#666; color:#fff; }
+    .ball-1, .ball-2, .ball-3 { background:#00aa66; color:#fff; }
+    .ball-4 { background:green; color:#fff; }
+    .ball-6 { background:blue; color:#fff; }
+    .ball-W { background:red; color:#fff; }
+    .ball-extra { background:yellow; color:#000; }
   </style>
 </head>
 <body>
@@ -87,7 +98,7 @@
     </div>
 
     <!-- Last 6 Balls -->
-    <div class="last6" id="last6"></div>
+    <div class="last6" id="last6Container">- - - - - -</div>
   </div>
 
   <script>
@@ -100,20 +111,28 @@
       document.getElementById('teamB').innerText = s.teamB;
       document.getElementById('scoreDisplay').innerText = `${s.runs}/${s.wickets} (${s.overs})`;
 
-      // Show last 6 balls with color
-      document.getElementById('last6').innerHTML = "";
-      if (s.last6) {
-        s.last6.split(" ").forEach(ball => {
-          if (ball.trim() !== "") {
-            const span = document.createElement("span");
-            span.className = `ball ball-${ball}`;
-            span.innerText = ball;
-            document.getElementById('last6').appendChild(span);
-          }
+      // ✅ LAST 6 BALLS WITH COLOR
+      let last6Container = document.getElementById('last6Container');
+      last6Container.innerHTML = "";
+      let balls = (s.last6 || "").split(" ").filter(Boolean);
+      if (balls.length === 0) {
+        last6Container.innerText = "- - - - - -";
+      } else {
+        balls.forEach(b => {
+          let span = document.createElement("span");
+          span.classList.add("ball");
+          if (b === "0") span.classList.add("ball-0");
+          else if (["1","2","3"].includes(b)) span.classList.add("ball-1");
+          else if (b === "4") span.classList.add("ball-4");
+          else if (b === "6") span.classList.add("ball-6");
+          else if (b.toUpperCase() === "W") span.classList.add("ball-W");
+          else span.classList.add("ball-extra");
+          span.innerText = b;
+          last6Container.appendChild(span);
         });
       }
 
-      // batsmen
+      // batsman 1
       document.getElementById('batsman1Name').innerText = s.batsman1?.name || "-";
       document.getElementById('batsman1R').innerText = s.batsman1?.runs || "0";
       document.getElementById('batsman1B').innerText = s.batsman1?.balls || "0";
@@ -121,6 +140,7 @@
       document.getElementById('batsman1S').innerText = s.batsman1?.sixes || "0";
       document.getElementById('batsman1SR').innerText = s.batsman1?.sr || "0.0";
 
+      // batsman 2
       document.getElementById('batsman2Name').innerText = s.batsman2?.name || "-";
       document.getElementById('batsman2R').innerText = s.batsman2?.runs || "0";
       document.getElementById('batsman2B').innerText = s.batsman2?.balls || "0";
@@ -135,19 +155,29 @@
       document.getElementById('bowlerW').innerText = s.bowler?.wickets || "0";
       document.getElementById('bowlerEco').innerText = s.bowler?.eco || "0.0";
 
-      // CRR + Target with wickets
+      // CRR & RRR Calculation
       let overs = parseFloat(s.overs);
       document.getElementById('crr').innerText = "CRR: " + (overs > 0 ? (s.runs / overs).toFixed(2) : "0.00");
 
       if (s.target) {
-        let targetText = `Target: ${s.target}`;
-        if (s.targetWickets !== undefined && s.targetWickets !== null) {
-          targetText += `/${s.targetWickets}`;
-        }
-        document.getElementById('target').innerText = targetText;
+        let targetDisplay = s.targetWickets ? `${s.target}/${s.targetWickets}` : `${s.target}`;
+        document.getElementById('target').innerText = `Target: ${targetDisplay}`;
+
+        let runsNeeded = s.target - s.runs;
+        let totalBalls = 120; // 20 overs
+        let ballsBowled = calcBalls(s.overs);
+        let ballsLeft = totalBalls - ballsBowled;
+        let rrr = ballsLeft > 0 ? ((runsNeeded / (ballsLeft/6))).toFixed(2) : "0.00";
+        document.getElementById('rrr').innerText = "RRR: " + rrr;
       } else {
+        document.getElementById('rrr').innerText = "RRR: -";
         document.getElementById('target').innerText = "Target: -";
       }
+    }
+
+    function calcBalls(overs) {
+      let [o, b] = overs.split('.').map(Number);
+      return (o * 6) + (b || 0);
     }
 
     fetchScore();

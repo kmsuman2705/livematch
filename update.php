@@ -10,7 +10,6 @@ if (file_exists($file)) {
     $existingData = json_decode(file_get_contents($file), true);
 }
 
-// Preserve old data if fields empty
 if (empty($data['score']['target']) && !empty($existingData['score']['target'])) {
     $data['score']['target'] = $existingData['score']['target'];
 }
