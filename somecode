@@ -1,0 +1,114 @@
+ cat > index.html 
+    4  sudo systemctl restart apache2
+    5  cd /etc/apache2/sites-available/
+    6  ls
+    7  sudo vim real.criccommentry.com.conf
+    8  sudo a2enmod ssl
+    9  sudo a2enmod rewrite
+   10  sudo systemcdtl restart apache2
+   11  sudo systemctl restart apache2
+   12  sudo a2ensite real.criccommentry.com.conf
+   13  sudo a2densite 000-default.conf 
+   14  sudo a2dissite 000-default.conf
+   15  sudo apt install certbot python3-certbot-apache -y
+   16  sudo certbot --apache -d real.criccommentry.com
+   17  sudo apt update
+   18  sudo apt install certbot python3-certbot-apache -y
+   19  sudo certbot --apache -d real.criccommentry.com
+   20  ls -l /etc/letsencrypt/options-ssl-apache.conf
+   21  sudo certbot --apache -d real.criccommentry.com
+   22  ls
+   23  sudo vim real.criccommentry.com.conf 
+   24  sudo a2ensite real.criccommentry.com.conf
+   25  sudo apache2ctl configtest
+   26  sudo vim real.criccommentry.com.conf 
+   27  sudo apache2ctl configtest
+   28  sudo certbot --apache -d real.criccommentry.com
+   29  sudo systemctl restart apache2
+   30  ls
+   31  cd /etc/apache2/sites-
+   32  cd /etc/apache2/sites-available/
+   33  ls
+   34  cat real.criccommentry.com.conf 
+   35  cd /var/www/html/
+   36  ls
+   37  cat > index.html 
+   38  cat > score.json
+   39  cat > update.html
+   40  cat > update.php
+   41  mv update.php update.html
+   42  cat > update.php
+   43  sudo apt install php libapache2-mod-php
+   44  sudo systemctl restart apache
+   45  sudo systemctl restart apache2
+   46  sudo certbot --apache2
+   47  sudo certbot --apache
+   48  sudo systemctl restart apache2
+   49  cat /var/www/html/score.json
+   50  ls
+   51  cat > update.php 
+   52  sudo touch /var/www/html/score.json
+   53  sudo chmod 666 /var/www/html/score.json
+   54  ll
+   55  sudo chown www-data:www-data /var/www/html/score.json
+   56  sudo chmod 644 /var/www/html/score.json
+   57  sudo chown www-data:www-data /var/www/html/update.php
+   58  ls
+   59  cat index.html 
+   60  ls
+   61  cat score.json 
+   62  sudo vim score.json 
+   63  ls
+   64  cat update.html 
+   65  ls
+   66  cat update.php 
+   67  cd /var/www/html/
+   68  cat > index.html 
+   69  cat > update.html 
+   70  cat > update.php 
+   71  cat > score.json 
+   72  cat index.html 
+   73  cat > index.html 
+   74  cat > update.html 
+   75  cd /var/www/html/
+   76  cat > update.html 
+   77  cat > index.html 
+   78  cat > update.html 
+   79  cat > index.html 
+   80  cat > update.html 
+   81  cd /var/www/html/
+   82  cat > update.php 
+   83  cat > update.html
+   84  cat > update.html 
+   85  cat > index.html 
+   86  cat > update.html 
+   87  cat > index.html 
+   88  cat > update.html 
+   89  cat > index.html 
+   90  cat update.
+   91  cat update.html 
+   92  cat > index.html 
+   93  cat > update.html 
+   94  free -m
+   95  df -h
+   96  sudo init 0
+   97  cat > index.html 
+   98  cat index.html 
+   99  cat > index.html 
+  100  cat > update.html 
+  101  cat > index.html 
+  102  cd /var/www/html/
+  103  ls
+  104  cat > update.html 
+  105  cp index.html upindex.html
+  106  ls
+  107  cat > index.html 
+  108  cat > upindex.html 
+  109  cd /var/www/html/
+  110  cat upindex.html 
+  111  cat > index.html 
+  112  cat update.php 
+  113  cat > update.html 
+  114  cat > update.php
+  115  cat > update.html
+  116  cd /var/www/html/
