@@ -6,33 +6,17 @@
   <style>
     body { background: #111; color: #fff; font-family: sans-serif; padding: 15px; }
     h2, h3 { text-align: center; margin-bottom: 10px; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 8px;
-      margin-bottom: 10px;
-    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 10px; }
     input {
       width: 100%; font-size: 14px; padding: 6px;
       border-radius: 6px; border: 1px solid #444;
-      background: #222; color: #fff;
-      text-align: center;
+      background: #222; color: #fff; text-align: center;
     }
-    .btn {
-      width: 100%; padding: 10px; margin-top: 10px;
-      font-size: 18px; border: none; border-radius: 8px;
-      background: #28a745; color: #fff; cursor: pointer;
-    }
+    .btn { width: 100%; padding: 10px; margin-top: 10px; font-size: 18px; border: none; border-radius: 8px;
+      background: #28a745; color: #fff; cursor: pointer; }
     .btn:hover { background: #218838; }
-    .ball-buttons {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px; margin-top: 10px;
-    }
-    .ball-btn {
-      padding: 10px; font-size: 16px; border: none;
-      border-radius: 6px; cursor: pointer; text-align: center;
-    }
+    .ball-buttons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 10px; }
+    .ball-btn { padding: 10px; font-size: 16px; border: none; border-radius: 6px; cursor: pointer; text-align: center; }
     .zero { background: #444; color: #fff; }
     .run { background: #00aa66; color: #fff; }
     .four { background: green; color: #fff; font-weight: bold; }
@@ -47,13 +31,15 @@
   <div class="grid">
     <input id="teamA" type="text" placeholder="Team A" value="India">
     <input id="teamB" type="text" placeholder="Team B" value="Pakistan">
+    <input id="target" type="number" placeholder="Target Runs">
+    <input id="targetWickets" type="number" placeholder="Target Wickets">
     <input id="runs" type="number" placeholder="Runs" value="0" oninput="updateCalculations()">
     <input id="wickets" type="number" placeholder="Wickets" value="0">
     <input id="overs" type="text" placeholder="Overs (e.g. 12.3)" value="0.0" oninput="updateCalculations()">
-    <input id="target" type="number" placeholder="Target">
     <input id="last6" type="text" placeholder="Last 6 Balls" readonly>
   </div>
 
+  <!-- Batsmen -->
   <h3>Current Batsmen</h3>
   <div class="grid">
     <input id="batsman1Name" type="text" placeholder="B1 Name">
@@ -71,6 +57,7 @@
     <input id="batsman2SR" type="text" placeholder="SR" value="0.0" readonly>
   </div>
 
+  <!-- Bowler -->
   <h3>Bowler</h3>
   <div class="grid">
     <input id="bowlerName" type="text" placeholder="Bowler Name">
@@ -110,6 +97,7 @@
 
       if (type === 'wicket') {
         wickets++;
+        overs = incrementOvers(overs);
       } else if (type === 'nb' || type === 'wd') {
         runs++;
       } else {
@@ -129,17 +117,14 @@
     }
 
     function updateCalculations() {
-      // Batsman 1 SR
       let r1 = parseInt(document.getElementById("batsman1R").value) || 0;
       let b1 = parseInt(document.getElementById("batsman1B").value) || 0;
       document.getElementById("batsman1SR").value = b1 > 0 ? ((r1 / b1) * 100).toFixed(2) : "0.0";
 
-      // Batsman 2 SR
       let r2 = parseInt(document.getElementById("batsman2R").value) || 0;
       let b2 = parseInt(document.getElementById("batsman2B").value) || 0;
       document.getElementById("batsman2SR").value = b2 > 0 ? ((r2 / b2) * 100).toFixed(2) : "0.0";
 
-      // Bowler ECO
       let bruns = parseInt(document.getElementById("bowlerR").value) || 0;
       let oversText = document.getElementById("bowlerO").value;
       let [o, b] = oversText.split('.').map(Number);
@@ -149,47 +134,47 @@
     }
 
     async function saveData() {
-      const payload = {
-        score: {
-          teamA: document.getElementById("teamA").value,
-          teamB: document.getElementById("teamB").value,
-          runs: parseInt(document.getElementById("runs").value),
-          wickets: parseInt(document.getElementById("wickets").value),
-          overs: document.getElementById("overs").value,
-          last6: document.getElementById("last6").value,
-          target: document.getElementById("target").value ? parseInt(document.getElementById("target").value) : null,
-          batsman1: {
-            name: document.getElementById("batsman1Name").value,
-            runs: parseInt(document.getElementById("batsman1R").value),
-            balls: parseInt(document.getElementById("batsman1B").value),
-            fours: parseInt(document.getElementById("batsman1F").value),
-            sixes: parseInt(document.getElementById("batsman1S").value),
-            sr: document.getElementById("batsman1SR").value
-          },
-          batsman2: {
-            name: document.getElementById("batsman2Name").value,
-            runs: parseInt(document.getElementById("batsman2R").value),
-            balls: parseInt(document.getElementById("batsman2B").value),
-            fours: parseInt(document.getElementById("batsman2F").value),
-            sixes: parseInt(document.getElementById("batsman2S").value),
-            sr: document.getElementById("batsman2SR").value
-          },
-          bowler: {
-            name: document.getElementById("bowlerName").value,
-            overs: document.getElementById("bowlerO").value,
-            runs: parseInt(document.getElementById("bowlerR").value),
-            wickets: parseInt(document.getElementById("bowlerW").value),
-            eco: document.getElementById("bowlerEco").value
-          }
+      let data = {
+        teamA: document.getElementById('teamA').value,
+        teamB: document.getElementById('teamB').value,
+        target: document.getElementById('target').value ? parseInt(document.getElementById('target').value) : null,
+        targetWickets: document.getElementById('targetWickets').value ? parseInt(document.getElementById('targetWickets').value) : null,
+        runs: parseInt(document.getElementById('runs').value),
+        wickets: parseInt(document.getElementById('wickets').value),
+        overs: document.getElementById('overs').value,
+        last6: document.getElementById('last6').value,
+        batsman1: {
+          name: document.getElementById('batsman1Name').value,
+          runs: parseInt(document.getElementById('batsman1R').value),
+          balls: parseInt(document.getElementById('batsman1B').value),
+          fours: parseInt(document.getElementById('batsman1F').value),
+          sixes: parseInt(document.getElementById('batsman1S').value),
+          sr: document.getElementById('batsman1SR').value
+        },
+        batsman2: {
+          name: document.getElementById('batsman2Name').value,
+          runs: parseInt(document.getElementById('batsman2R').value),
+          balls: parseInt(document.getElementById('batsman2B').value),
+          fours: parseInt(document.getElementById('batsman2F').value),
+          sixes: parseInt(document.getElementById('batsman2S').value),
+          sr: document.getElementById('batsman2SR').value
+        },
+        bowler: {
+          name: document.getElementById('bowlerName').value,
+          overs: document.getElementById('bowlerO').value,
+          runs: parseInt(document.getElementById('bowlerR').value),
+          wickets: parseInt(document.getElementById('bowlerW').value),
+          eco: document.getElementById('bowlerEco').value
         }
       };
 
-      const res = await fetch('update.php', {
+      let response = await fetch('update.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ score: data })
       });
-      document.getElementById("result").innerText = await res.text();
+      let result = await response.text();
+      document.getElementById('result').innerText = result;
     }
   </script>
 </body>
