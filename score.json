@@ -1,33 +1,38 @@
+root@ip-172-31-2-213:/var/www/html# cat score.json 
 {
     "score": {
         "teamA": "India",
         "teamB": "Pakistan",
-        "runs": 136,
-        "wickets": 7,
-        "overs": "15.0",
-        "last6": "NB W W 6 1 3",
-        "target": 190,
+        "runs": 178,
+        "wickets": 4,
+        "overs": "19.0",
+        "target": 171,
+        "targetOvers": "20",
+        "targetWickets": "5",
+        "last6": "0 0 1 6 6 4",
         "batsman1": {
-            "name": "rohit",
-            "runs": 50,
-            "balls": 10,
+            "name": "Tilak Varma",
+            "runs": 36,
+            "balls": 20,
             "fours": 2,
-            "sixes": 2,
-            "sr": "500.00"
+            "sixes": 3,
+            "sr": 180
         },
         "batsman2": {
-            "name": "surya",
-            "runs": 30,
-            "balls": 5,
+            "name": "Hardik Pandya",
+            "runs": 7,
+            "balls": 7,
             "fours": 1,
-            "sixes": 2,
-            "sr": "600.00"
+            "sixes": 0,
+            "sr": 100
         },
         "bowler": {
-            "name": "ravi",
-            "overs": "5.4",
-            "runs": 20,
-            "wickets": 2,
-            "eco": "3.53"
-        }
+            "name": "Shaheen Afridi",
+            "overs": "3.4",
+            "runs": 36,
+            "wickets": 0,
+            "eco": "9.82"
+        },
+        "crr": 9.37,
+        "rrr": -6
     }
